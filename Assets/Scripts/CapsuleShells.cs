@@ -43,10 +43,10 @@ public class CapsuleShells : MonoBehaviour
     [SerializeField] float _radius = 10.0f;
 
     // 停止場所判定  
-    public Vector3 RangeOA = new Vector3(120, 25, 120);
+    public Vector3 RangeOA = new Vector3(150, 35, 150);
 
     // 停止速度判定  
-    public Vector3 RangeOS = new Vector3(5, 0.5f, 5);
+    public Vector3 RangeOS = new Vector3(10, 4.5f, 10);
 
     private readonly int[] indices;
 
@@ -184,12 +184,13 @@ public class CapsuleShells : MonoBehaviour
                                 // GameObject prefabFromAssets = (GameObject)Instantiate(AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Fireworks/Rocket 1/Prefab/Rocket 1.prefab"), new Vector3(0, 0, 0), Quaternion.identity);
                                 GetComponent<AudioSource>().PlayOneShot(Resources.Load<AudioClip>("Sounds/OpenCapsule"), 1.0f);
                                 int number = UnityEngine.Random.Range(0, 10);
-                                for (int i=1; i<number+1; i++){
+                                for (int i = 1; i < number + 1; i++)
+                                {
                                     GameObject prefabHanabi = (GameObject)Instantiate(
-                                        Resources.Load($"Prefabs/Fireworks/Rocket {i}"),
-                                        // AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Fireworks/Rocket {i}/Prefab/Rocket {i}.prefab"), 
-                                        new Vector3((number+1)*10, -20, (number+1)*10), 
-                                        Quaternion.identity);
+                                    Resources.Load($"Prefabs/Fireworks/Rocket {i}"),
+                                    // AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/Fireworks/Rocket {i}/Prefab/Rocket {i}.prefab"), 
+                                    new Vector3((number + 1) * 10, -20, (number + 1) * 10),
+                                    Quaternion.identity);
                                 }
 
                                 rigidbody.isKinematic = false;

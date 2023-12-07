@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(AudioClip))]
 [RequireComponent(typeof(AudioSource))]
@@ -18,40 +19,40 @@ public class Capsules : MonoBehaviour
     public GameObject[] Prefabs;
 
     public List<Vector3> Vector3s = new List<Vector3>();
-
     private int number;
+    int PrefabsExistCnt;
 
-    [System.Obsolete]
 
     void Awake()
     {
-        StartCoroutine(Connect());
         CapsulePrefabPack();
         CapsuleInstantiate();
     }
 
-    [System.Obsolete]
-    private IEnumerator Connect()
+    void Start()
     {
-        urls = new String[]
-        {
-            // 任意のWEBサイトから読み込む方法（現在MP3形式のみ対応）
-            // https://morexlusive.com/camila-cabello-dont-go-yet-3/
-            "https://www1.morexlusive.com/wp-content/uploads/2021/10/Camila_Cabello_-_Dont_Go_Yet.mp3",
-            // "https://kamatamago.com/sozai/classic/c00001-c00100/C00016_kamatamago_Prelude-to-Act-1(Bullfighter).mp3"
-            // https://classix.sitefactory.info/downmp3.html
-            "https://classix.sitefactory.info/mp3classic/bizet/2464.mp3"
-        };
-        // string url = string.Join("", urls);
-
-        number = UnityEngine.Random.Range(0, urls.Length);
-        WWW www = new WWW(urls[number]);
-        yield return www;
-        audios = GetComponent<AudioSource>();
-        audios.clip = www.GetAudioClip(false, true, mp3);   // 二つ目の引数がtrueで読込中の再生可能
-        audios.Play();
-
+        StartCoroutine(CheckStatus());
     }
+
+
+    IEnumerator CheckStatus()
+    {
+        yield return new WaitForSeconds(120.0f);
+        PrefabsExistCnt = Prefabs.Length;
+        while (PrefabsExistCnt > 0)
+        {
+            for (int i = 0; i < Prefabs.Length; i++)
+            {
+                // Debug.Log($"PrefabsExistCnt {PrefabsExistCnt} Prefabs[i].transform.childCount : {Prefabs[i].transform.childCount}");
+                if (Prefabs[i].transform.childCount == 0) PrefabsExistCnt--;
+                if (Prefabs[i].transform.childCount != 0 && Prefabs[i].transform.position.y < 50) PrefabsExistCnt--;
+                // foreach (Transform child in Prefabs[i].transform) Destroy(child.gameObject);
+            }
+            yield return new WaitForSeconds(1.0f);
+        }
+        SceneManager.LoadScene("End");
+    }
+
 
     private void CapsulePrefabPack()
     {
@@ -78,16 +79,16 @@ public class Capsules : MonoBehaviour
         };
 
         Vector3s = new List<Vector3>()
-        {
-            // new Vector3(30, 700, 0),
-            new Vector3(-30, 700, 10),
-            new Vector3(10, 800, -30),
-            new Vector3(0, 900, 30),
-            new Vector3(-20, 900, -30),
-            new Vector3(30, 950, -10),
-            new Vector3(-30, 950, 20),
-            new Vector3(10, 1000, -20)
-        };
+            {
+                // new Vector3(30, 700, 0),
+                new Vector3(-30, 700, 10),
+                new Vector3(10, 800, -30),
+                new Vector3(0, 900, 30),
+                new Vector3(-20, 900, -30),
+                new Vector3(30, 950, -10),
+                new Vector3(-30, 950, 20),
+                new Vector3(10, 1000, -20)
+            };
     }
 
     public void CapsuleInstantiate()
@@ -106,6 +107,5 @@ public class Capsules : MonoBehaviour
             }
 
         }
-
     }
 }
