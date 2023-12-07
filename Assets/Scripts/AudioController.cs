@@ -1,16 +1,9 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
 
 [RequireComponent(typeof(AudioClip))]
 [RequireComponent(typeof(AudioSource))]
-
 public class AudioController : MonoBehaviour
 {
     AudioSource audios; // AudioSource利用    
