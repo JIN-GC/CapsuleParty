@@ -43,7 +43,7 @@ public class CapsuleShells : MonoBehaviour
     [SerializeField] float _radius = 10.0f;
 
     // 停止場所判定  
-    public Vector3 RangeOA = new Vector3(150, 35, 150);
+    public Vector3 RangeOA = new Vector3(150, 45, 150);
 
     // 停止速度判定  
     public Vector3 RangeOS = new Vector3(10, 4.5f, 10);
