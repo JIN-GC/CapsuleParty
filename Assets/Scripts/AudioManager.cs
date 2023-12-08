@@ -1,39 +1,25 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace AudioManager
 {
     public abstract class SingletonMonoBehaviour<T> : MonoBehaviour where T : MonoBehaviour
     {
-        // インスタンス
-        private static T instance;
-        // インスタンスを外部から参照する用(getter)
-        public static T Instance
+        private static T instance;  // インスタンス
+        public static T Instance    // インスタンスを外部から参照する用(getter)
         {
-            get
-            {
-                //インスタンスがまだ作られていない
-                if (instance == null)
+            get {
+                if (instance == null)   //インスタンスがまだ作られていない
                 {
-                    // シーン内からインスタンスを取得
-                    Type t = typeof(T);
+                    Type t = typeof(T); // シーン内からインスタンスを取得
                     instance = (T)FindObjectOfType(t);
-                    // シーン内に存在しない場合はエラー
-                    if (instance == null)
-                    {
-                        Debug.LogError(t + "is Not Found");
-                    }
+                    if (instance == null) Debug.LogError(t + "is Not Found");  // シーン内に存在しない場合はエラー
                 }
                 return instance;
             }
         }
 
-        virtual protected void Awake()
-        {
-            CheckInstance();
-        }
+        virtual protected void Awake(){CheckInstance();}
         protected bool CheckInstance()
         {
             if (instance == null)

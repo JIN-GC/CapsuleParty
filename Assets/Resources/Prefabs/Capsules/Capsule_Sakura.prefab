@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 162717483941509619}
   m_Layer: 0
   m_Name: Capsule_Sakura
-  m_TagString: Finish
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

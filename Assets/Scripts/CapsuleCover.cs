@@ -1,33 +1,19 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-
-using JetBrains.Annotations;
-using UniRx;
 using UnityEngine;
-using Unity.VisualScripting;
-using UnityEngine.AI;
-using UnityEditor;
 
 [RequireComponent(typeof(AudioClip))]
 [RequireComponent(typeof(AudioSource))]
-
 public class CapsuleCover : MonoBehaviour
 {
-
-    // 配列型：複数の音声クリップ（スクリプトアタッチ）
-    [SerializeField] public AudioClip[] clips;
-    // オーディオソースコンポーネント（インスペクターアタッチ）
-    private AudioSource audioSource;
-    public GameObject[] Prefabs;
-    private int number;
-
-    void Awake()
+    [SerializeField] private AudioClip[] p_AudioClipList;  // AudioClip配列
+    private AudioSource p_AudioSource;    // AudioSource変数
+    private GameObject[] p_PrefabList;
+    private int p_RandNum;
+    private void Awake()
     {
-        //Loading the items into the array
-        clips = new AudioClip[]
+        
+        p_AudioClipList = new AudioClip[]
         {
-            // Resourcesフォルダから読み込む方法
+            // Resourcesフォルダからメディア読込
             (AudioClip)Resources.Load("Sounds/GlassStairs/GlassStairs00"),
             // (AudioClip)Resources.Load("Sounds/GlassStairs/GlassStairs01"),
             (AudioClip)Resources.Load("Sounds/GlassStairs/GlassStairs02"),
@@ -37,128 +23,93 @@ public class CapsuleCover : MonoBehaviour
             // (AudioClip)Resources.Load("Sounds/GlassStairs/GlassStairs06")
         };
 
-        Prefabs = new GameObject[]
+        p_PrefabList = new GameObject[]
         {
             (GameObject)Resources.Load("Prefabs/Fireworks/Rocket 1"),
             (GameObject)Resources.Load("Prefabs/Fireworks/Rocket 2"),
             (GameObject)Resources.Load("Prefabs/Fireworks/Rocket 3"),
             (GameObject)Resources.Load("Prefabs/Fireworks/Rocket 4"),
             (GameObject)Resources.Load("Prefabs/Fireworks/Rocket 5")
-            // // 任意のフォルダから読み込む方法
+            // // 任意のフォルダからPrefab読込
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Fireworks/Rocket 1/Prefab/Rocket 1.prefab"),
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Fireworks/Rocket 2/Prefab/Prefab 2.prefab"),
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Fireworks/Rocket 3/Prefab/Prefab 3.prefab"),
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Fireworks/Rocket 4/Prefab/Prefab 4.prefab"),
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Fireworks/Rocket 5/Prefab/Prefab 5.prefab")
         };
-
-        Hanabi_0();
+        Hanabi();
     }
 
 
-    void Start()
-    {
-        
-    }
+    // public float Gravity = 9.8f; // 重力の強さ
 
-    // public float gravity = 9.8f; // 重力の強さ
-
-    void Update()
+    private void Update()
     {
         // // 重力の方向を設定
         // Vector3 gravityDirection = (transform.position - Camera.main.transform.position).normalized;
-        // Physics.gravity = gravity * gravityDirection;
+        // Physics.gravity = Gravity * gravityDirection;
 
-        int ObjCount = this.transform.childCount;
-        if (ObjCount == 0)
-        {
-            Debug.Log("targetがDestroyされました");
-            Sound_0();
-        }
-
-        //         this.OnDestroyed.AddListener(()=>{
-        //             Debug.Log("targetがDestroyされました");
-        // 　　　　　　 // ここに処理を追加
-        //         });
+        // if (transform.childCount == 0) Sound_Open();
     }
-    void PlayClipSound()
+    private void PlayClipSound()
     {
         // AudioSource コンポーネントの取得
-        audioSource = GetComponent<AudioSource>();
-        // clips配列のセットMusicからランダムに選択
-        audioSource.clip = clips[UnityEngine.Random.Range(0, clips.Length)];
+        p_AudioSource = GetComponent<AudioSource>();
+        // p_AudioClipList配列のセットMusicからランダムに選択
+        p_AudioSource.clip = p_AudioClipList[UnityEngine.Random.Range(0, p_AudioClipList.Length)];
         // ボリューム
-        audioSource.volume = 0.1f;
+        p_AudioSource.volume = 0.1f;
         // 再生
-        audioSource.Play();
+        p_AudioSource.Play();
     }
-        void OnTriggerEnter()
+    private void OnTriggerEnter(){PlayClipSound();} // ColiderのisTriggerのチェックをONにし衝突判定を無効化(すり抜ける時)
+    private void OnCollisionEnter(){PlayClipSound();}   // ColiderのisTriggerのチェックを外し接触判定有効化(対RigiBodyオブジェクト用)
+    public void Hanabi()
     {
-        // OnTriggerEnterで判定する場合は、Coliderコンポーネント内のisTriggerにチェックをつけて置く必要があります。 衝突した時の影響はなくなるので、すり抜ける時
-        PlayClipSound();
+        // Instantiate(p_PrefabList[p_RandNum], new Vector3(0, 0, 0), Quaternion.identity);
+        p_RandNum = UnityEngine.Random.Range(0, p_PrefabList.Length);
+        for (int i=0; i<p_RandNum; i++) Instantiate(p_PrefabList[i], new Vector3(i, i, i), Quaternion.identity, transform.parent);
     }
 
-
-    void OnCollisionEnter()
+    private void Sound_Open()
     {
-        // Coliderコンポーネント内のisTriggerにチェックは外します。 そして、反発させるためには、判定したいオブジェクトにRigiBodyコンポーネントを追加して置く必要があります。
-        PlayClipSound();
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(Resources.Load<AudioClip>("Sounds/OpenCapsule"), 1.0f);
     }
-
-        public void Hanabi_0()
-    {
-        {
-            // number = UnityEngine.Random.Range(0, Prefabs.Length);
-            // GameObject stageObject = (GameObject)Instantiate(
-            // Prefabs[number],
-            // new Vector3(0, 0, 0),
-            // Quaternion.identity);
-
-            // Instantiate(Prefabs[number], new Vector3(0, 0, 0), Quaternion.identity);
-            // number = Random.Range(0, Prefabs.Length);
-            number = UnityEngine.Random.Range(0, Prefabs.Length);
-            for (int i=0; i<number; i++){
-                Instantiate(Prefabs[i], new Vector3(i, i, i), Quaternion.identity, transform.parent);
-                // Debug.Log($"number: {number} Prefabs[number]: {Prefabs[number].name.ToSafeString()} ");
-            }
-
-        }
-    }
-
     public void Sound_0()
     {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(Resources.Load<AudioClip>("Sounds/OpenCapsule"), 1.0f);
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(p_AudioClipList[1]);
     }
+
     public void Sound_1()
     {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(clips[1]);
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(p_AudioClipList[1]);
     }
     public void Sound_2()
     {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(clips[2]);
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(p_AudioClipList[2]);
     }
     public void Sound_3()
     {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(clips[3]);
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(p_AudioClipList[3]);
     }
     public void Sound_4()
     {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(clips[4]);
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(p_AudioClipList[4]);
     }
     public void Sound_5()
     {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(clips[5]);
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(p_AudioClipList[5]);
     }
     public void Sound_6()
     {
-        audioSource = GetComponent<AudioSource>();
-        audioSource.PlayOneShot(clips[6]);
+        p_AudioSource = GetComponent<AudioSource>();
+        p_AudioSource.PlayOneShot(p_AudioClipList[6]);
     }
-
 }

@@ -43,7 +43,7 @@ public class CapsuleShells : MonoBehaviour
     [SerializeField] float _radius = 10.0f;
 
     // 停止場所判定  
-    public Vector3 RangeOA = new Vector3(150, 45, 150);
+    public Vector3 RangeOA = new Vector3(250, 45, 250);
 
     // 停止速度判定  
     public Vector3 RangeOS = new Vector3(10, 4.5f, 10);
@@ -115,6 +115,7 @@ public class CapsuleShells : MonoBehaviour
     // 1フレーム前の位置
     private Vector3 _prevPosition;
     private int cntVelocity = 0;
+    private int p_SuspendingVelocityCnt = 0;
 
 
     private AudioSource audioSource;
@@ -192,9 +193,7 @@ public class CapsuleShells : MonoBehaviour
                                     new Vector3((number + 1) * 10, -20, (number + 1) * 10),
                                     Quaternion.identity);
                                 }
-
                                 rigidbody.isKinematic = false;
-
                                 // 反発処理
                                 if ((gameObject.name == "Capsule_Right" || gameObject.transform.Find("Capsule_Right") != null))
                                 {
@@ -216,12 +215,23 @@ public class CapsuleShells : MonoBehaviour
                     if (parentObject != null)
                     {
                         parentObject.SetActive(false);
+                        Capsules.SetPrefabsCheckCnt();
+                        parentObject.transform.tag = "Finish";  // 終了判定用タグ設定(Capsules.cs)
                     }
                 }
 
                 return;
             }
+        } else if ((Math.Abs(position.y) < -50) || (Math.Abs(velocity.x) < 0.2 && Math.Abs(velocity.y) < 0 && Math.Abs(velocity.z) < 0.2 && Math.Abs(position.x) < 250 && Math.Abs(position.y) < 50 && Math.Abs(position.z) < 250))
+        {
+            p_SuspendingVelocityCnt++;
+            if((Math.Abs(position.y) < -50) || (p_SuspendingVelocityCnt > 100 && transform.childCount != 0)) 
+            {
+                transform.parent.gameObject.transform.tag = "Finish";  // 終了判定用タグ設定(Capsules.cs)
+                Capsules.SetPrefabsCheckCnt();
+            } 
         }
+
         // 前フレーム位置を更新
         _prevPosition = position;
     }

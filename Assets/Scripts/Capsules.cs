@@ -1,9 +1,4 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -11,52 +6,36 @@ using UnityEngine.SceneManagement;
 [RequireComponent(typeof(AudioSource))]
 public class Capsules : MonoBehaviour
 {
-    AudioSource audios;
+    [SerializeField] private GameObject[] p_PrefabList;
+    [SerializeField] private Vector3[] p_VectorList;
+    private static int p_CntPrefabs = 0;
+    private int p_RandNum;
 
-    public AudioType mp3;
-    public string[] urls;
-
-    public GameObject[] Prefabs;
-
-    public List<Vector3> Vector3s = new List<Vector3>();
-    private int number;
-    int PrefabsExistCnt;
-
-
-    void Awake()
+    public static void SetPrefabsCheckCnt(){p_CntPrefabs++;} // 設定用関数
+    private void Awake()
     {
-        CapsulePrefabPack();
+        CapsulePrefabList();
         CapsuleInstantiate();
     }
-
-    void Start()
+    private void Start(){StartCoroutine(CheckStatus());}
+    private IEnumerator CheckStatus()
     {
-        StartCoroutine(CheckStatus());
-    }
-
-
-    IEnumerator CheckStatus()
-    {
-        yield return new WaitForSeconds(120.0f);
-        PrefabsExistCnt = Prefabs.Length;
-        while (PrefabsExistCnt > 0)
+        int cnt = 1;
+        yield return new WaitForSeconds(90.0f);
+        // p_CntPrefabs = p_PrefabList.Length;
+        while (p_CntPrefabs < p_PrefabList.Length)
         {
-            for (int i = 0; i < Prefabs.Length; i++)
-            {
-                // Debug.Log($"PrefabsExistCnt {PrefabsExistCnt} Prefabs[i].transform.childCount : {Prefabs[i].transform.childCount}");
-                if (Prefabs[i].transform.childCount == 0) PrefabsExistCnt--;
-                if (Prefabs[i].transform.childCount != 0 && Prefabs[i].transform.position.y < 50) PrefabsExistCnt--;
-                // foreach (Transform child in Prefabs[i].transform) Destroy(child.gameObject);
-            }
-            yield return new WaitForSeconds(1.0f);
+            for (int i=0; i < p_PrefabList.Length; i++) if (p_PrefabList[i].transform.tag == "Finish") ++cnt;
+            // for (int i = 0; i < p_PrefabList.Length; i++) if (p_PrefabList[i].transform.tag == "Finish") p_CntPrefabs--;
+            yield return new WaitForSeconds(5.0f);
         }
+        if (p_CntPrefabs != cnt) Debug.Log($"[@Error] cnt: {cnt}, p_CntPrefabs: {p_CntPrefabs}");
         SceneManager.LoadScene("End");
     }
-
-
-    private void CapsulePrefabPack()
+    
+    private void CapsulePrefabList()
     {
-        Prefabs = new GameObject[]
+        p_PrefabList = new GameObject[]
         {
             // (GameObject)Resources.Load("Prefabs/Capsules/Capsule_Case"),
             (GameObject)Resources.Load("Prefabs/Capsules/Capsule_Goryokaku"),
@@ -78,7 +57,7 @@ public class Capsules : MonoBehaviour
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Capsules/Capsule_TokyoTower.prefab")
         };
 
-        Vector3s = new List<Vector3>()
+        p_VectorList = new Vector3[]
             {
                 // new Vector3(30, 700, 0),
                 new Vector3(-30, 700, 10),
@@ -91,21 +70,23 @@ public class Capsules : MonoBehaviour
             };
     }
 
-    public void CapsuleInstantiate()
+    private void CapsuleInstantiate()
     {
-        var parent = this.transform;
-        number = UnityEngine.Random.Range(0, Prefabs.Length);
-        for (int i = 0; i < Prefabs.Length; i++)
+        GameObject prefabTemp; //  p_PrefabList配列シャッフル用変数
+        Vector3 vectorTemp; //  p_VectorList配列シャッフル用変数
+        for (int i=0; i < p_PrefabList.Length; i++)
         {
-            if (number + i < Prefabs.Length)
-            {
-                Instantiate(Prefabs[number + i], Vector3s[number + i], Quaternion.identity, parent);
-            }
-            else
-            {
-                Instantiate(Prefabs[(i + number) - Prefabs.Length], Vector3s[(i + number) - Prefabs.Length], Quaternion.identity, parent);
-            }
-
+            p_RandNum = UnityEngine.Random.Range(0, i + 1); // Fisher-Yatesシャッフルアルゴリズム
+            prefabTemp = p_PrefabList[i];
+            p_PrefabList[i] = p_PrefabList[p_RandNum];
+            p_PrefabList[p_RandNum] = prefabTemp;
+            vectorTemp = p_VectorList[p_RandNum];
+            p_VectorList[p_RandNum] = p_VectorList[i];
+            p_VectorList[i] = vectorTemp;
         }
+
+        p_RandNum = UnityEngine.Random.Range(0, p_PrefabList.Length); // シャッフル後にPrefab生成
+        var parentTransform = this.transform;
+        for (int i = 0; i < p_PrefabList.Length; i++) Instantiate(p_PrefabList[i], p_VectorList[i], Quaternion.identity, parentTransform);
     }
 }
