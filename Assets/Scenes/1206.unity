@@ -330,8 +330,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9ff37006486d1b459bd4e82d98e09c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PrefabList: []
-  VectorList: []
+  p_PrefabList: []
+  p_VectorList: []
 --- !u!1001 &512146650
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -734,6 +734,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: CeilingCylinderLv1
       objectReference: {fileID: 0}
+    - target: {fileID: 7508929270191569598, guid: 1367c75ab25a9ad4a98244f5752d6560,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 650
+      objectReference: {fileID: 0}
+    - target: {fileID: 7508929270191569598, guid: 1367c75ab25a9ad4a98244f5752d6560,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 650
+      objectReference: {fileID: 0}
     - target: {fileID: 8211607311370263900, guid: 1367c75ab25a9ad4a98244f5752d6560,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -956,11 +966,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   p_TargetTransform: {fileID: 0}
-  CameraDistance: 400
+  p_CameraDistance: 400
   p_LerpTime: 5
   p_Target: {fileID: 0}
   p_MoveSpeed: 10
-  p_RotateSpeed: 20
+  p_RotationSpeed: 20
   p_Boost: 2
 --- !u!1 &1882418264
 GameObject:
