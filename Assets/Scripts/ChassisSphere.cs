@@ -8,6 +8,26 @@ using UnityEditor;
 using UniRx;
 using UniRx.Triggers;
 
+///	XMLドキュメントコメントのタグ一覧
+/// <summary>e.g.summary contents
+///     <example>e.g example
+///     <para />linefeed CRLF
+///     <typeparamref name="Type" />
+///     <typeparam name="Type">: e.g. Type of the Elements</typeparam>
+///     <param name="paramName" />e.g. Parameter Description
+///     <paramref name="paramName" />
+///     <see cref="OtherClass.OtherMethod" />e.g. Description
+///     <seealso cref="OtherClass" />e.g. Description
+///     <code>e.g. Description Code
+/// <exception cref="ExceptionType" />Description
+/// <remarks />e.g. Additional remarks or notes
+/// <returns />e.g. Return Value Description
+///	※ XMLドキュメントコメントはインテリセンスでヒントを表示機能のみではなく作業効率と品質向上に役立ちます。
+///	※ バージョン管理(GitHub・Wiki/GitLabPages/Confluence)
+///	※ API/ドキュメント(バージョン管理含む)の自動生成(DocFX/Doxygen/Sandcastle/GhostDoc(クラス図サポート))
+///	※ メタデータによるコード品質解析や静的解析(DocFX/StyleCop/ReSharper/RoslynAnalyzer/SonarQube)
+///	※ テストケースの自動生成(DocFX/Pex&Moles/AutoFixture)、コード カバレッジ(UnityTestFramework/UnityCoverlet/dotCover)
+
 public class ChassisSphere : MonoBehaviour
 {
 
@@ -197,7 +217,11 @@ public class ChassisSphere : MonoBehaviour
         // オブジェクトコライダーを非アクティブ化(解放)
         // meshCollider.isTrigger = false;
         meshCollider.enabled = false;
+        yield return new WaitForSeconds(10.0f);
 
+        // オブジェクトコライダーをアクティブ化(閉鎖)
+        // meshCollider.isTrigger = true;
+        meshCollider.enabled = true;
     }
 
     IEnumerator ObjectInactivate(Collider other)

@@ -3,7 +3,8 @@ Shader "Custom/ClearGlass"
 	Properties
 	{
 		_Color("Color", Color) = (0.5, 0.65, 1.0, 0.4)
-		_RimPower ("Rim Power", Range(1.0, 32.0)) = 10.0
+		#_RimPower ("Rim Power", Range(1.0, 32.0)) = 10.0
+		_RimPower ("Rim Power", Range(1.0, 32.0)) = 3.5
 	}
 	SubShader
 	{

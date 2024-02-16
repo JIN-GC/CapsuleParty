@@ -2,41 +2,87 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(AudioClip))]
-[RequireComponent(typeof(AudioSource))]
+///	XMLドキュメントコメントのタグ一覧
+/// <summary>e.g.summary contents
+///     <example>e.g example
+///     <para />linefeed CRLF
+///     <typeparamref name="Type" />
+///     <typeparam name="Type">: e.g. Type of the Elements</typeparam>
+///     <param name="paramName" />e.g. Parameter Description
+///     <paramref name="paramName" />
+///     <see cref="OtherClass.OtherMethod" />e.g. Description
+///     <seealso cref="OtherClass" />e.g. Description
+///     <code>e.g. Description Code
+/// <exception cref="ExceptionType" />Description
+/// <remarks />e.g. Additional remarks or notes
+/// <returns />e.g. Return Value Description
+///	※ XMLドキュメントコメントはインテリセンスでヒントを表示機能のみではなく作業効率と品質向上に役立ちます。
+///	※ バージョン管理(GitHub・Wiki/GitLabPages/Confluence)
+///	※ API/ドキュメント(バージョン管理含む)の自動生成(DocFX/Doxygen/Sandcastle/GhostDoc(クラス図サポート))
+///	※ メタデータによるコード品質解析や静的解析(DocFX/StyleCop/ReSharper/RoslynAnalyzer/SonarQube)
+///	※ テストケースの自動生成(DocFX/Pex&Moles/AutoFixture)、コード カバレッジ(UnityTestFramework/UnityCoverlet/dotCover)
+
 public class Capsules : MonoBehaviour
 {
-    [SerializeField] private GameObject[] p_PrefabList;
-    [SerializeField] private Vector3[] p_VectorList;
-    private static int p_CntPrefabs = 0;
-    private int p_RandNum;
+    /// <summary>
+    /// Capsules Prefab 配列
+    /// </summary>
+    [SerializeField] private GameObject[] _prefabList;
+    /// <summary>
+    /// Capsules Prefab 生成座標配列
+    /// </summary>
+    [SerializeField] private Vector3[] _vectorList;
+    private static int _prefabsCnt = 0;
 
-    public static void SetPrefabsCheckCnt(){p_CntPrefabs++;} // 設定用関数
+    /// <summary>
+    /// 終了判定カウント Setter関数(CapsuleCoverクラス呼出し用)
+    /// </summary>
+    public static void SetPrefabsCheckCnt()
+    {
+        _prefabsCnt++;
+    }
     private void Awake()
     {
         CapsulePrefabList();
         CapsuleInstantiate();
     }
-    private void Start(){StartCoroutine(CheckStatus());}
+    private void Start()
+    {
+        StartCoroutine(CheckStatus());
+    }
+
+    /// <summary>
+    /// 終了判定カウント＆シーン切替え 
+    /// </summary>
     private IEnumerator CheckStatus()
     {
-        int cnt = 1;
-        yield return new WaitForSeconds(90.0f);
-        // p_CntPrefabs = p_PrefabList.Length;
-        while (p_CntPrefabs < p_PrefabList.Length)
+        int chkCnt = 0;
+        yield return new WaitForSeconds(30.0f);
+        while (_prefabsCnt < _prefabList.Length)
         {
-            for (int i=0; i < p_PrefabList.Length; i++) if (p_PrefabList[i].transform.tag == "Finish") ++cnt;
-            // for (int i = 0; i < p_PrefabList.Length; i++) if (p_PrefabList[i].transform.tag == "Finish") p_CntPrefabs--;
-            yield return new WaitForSeconds(5.0f);
+            chkCnt = 0; // リセット
+            for (int i = 0; i < _prefabList.Length; i++)
+            {
+                if (!gameObject.transform.GetChild(i).gameObject.activeSelf)
+                {
+                    chkCnt++;
+                    // Debug.Log($"[@ CheckStatusD] [chkCnt]: {chkCnt}, [_prefabsCnt]: {_prefabsCnt} [_prefabList.Length]: {_prefabList.Length} [gameObject.tag]: {gameObject.transform.GetChild(i).gameObject.tag.ToString()}");
+                }
+            } 
+            yield return new WaitForSeconds(10.0f);
         }
-        if (p_CntPrefabs != cnt) Debug.Log($"[@Error] cnt: {cnt}, p_CntPrefabs: {p_CntPrefabs}");
+        // Debug.Log($"[@ END] [chkCnt]: {chkCnt} [_prefabsCnt]: {_prefabsCnt}");
         SceneManager.LoadScene("End");
     }
-    
+
+    /// <summary>
+    /// CapsulePrefab設定
+    /// </summary>
     private void CapsulePrefabList()
     {
-        p_PrefabList = new GameObject[]
+        _prefabList = new GameObject[]
         {
+            // Resourcesフォルダから読み込む方法
             // (GameObject)Resources.Load("Prefabs/Capsules/Capsule_Case"),
             (GameObject)Resources.Load("Prefabs/Capsules/Capsule_Goryokaku"),
             (GameObject)Resources.Load("Prefabs/Capsules/Capsule_Louve"),
@@ -45,7 +91,6 @@ public class Capsules : MonoBehaviour
             (GameObject)Resources.Load("Prefabs/Capsules/Capsule_PyramidAndCamel"),
             (GameObject)Resources.Load("Prefabs/Capsules/Capsule_StoneHenge"),
             (GameObject)Resources.Load("Prefabs/Capsules/Capsule_TokyoTower")
-
             // 任意のフォルダから読み込む方法
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Capsules/Capsule_Case.prefab"),
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Capsules/Capsule_Goryokaku.prefab"),
@@ -56,8 +101,7 @@ public class Capsules : MonoBehaviour
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Capsules/Capsule_StoneHenge.prefab"),
             // AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Prefabs/Capsules/Capsule_TokyoTower.prefab")
         };
-
-        p_VectorList = new Vector3[]
+        _vectorList = new Vector3[]                                 // _prefabList生成座標配列設定
             {
                 // new Vector3(30, 700, 0),
                 new Vector3(-30, 700, 10),
@@ -69,24 +113,27 @@ public class Capsules : MonoBehaviour
                 new Vector3(10, 1000, -20)
             };
     }
-
+    /// <summary>
+    /// CapsulePrefab生成
+    /// </summary>
     private void CapsuleInstantiate()
-    {
-        GameObject prefabTemp; //  p_PrefabList配列シャッフル用変数
-        Vector3 vectorTemp; //  p_VectorList配列シャッフル用変数
-        for (int i=0; i < p_PrefabList.Length; i++)
+    {   
+        GameObject prefabTemp;                                      // _prefabList配列シャッフル用変数
+        Vector3 vectorTemp;                                         // _vectorList配列シャッフル用変数
+        int randNum;                                                // シャッフル用ランダム変数
+        for (int i=0; i < _prefabList.Length; i++)
         {
-            p_RandNum = UnityEngine.Random.Range(0, i + 1); // Fisher-Yatesシャッフルアルゴリズム
-            prefabTemp = p_PrefabList[i];
-            p_PrefabList[i] = p_PrefabList[p_RandNum];
-            p_PrefabList[p_RandNum] = prefabTemp;
-            vectorTemp = p_VectorList[p_RandNum];
-            p_VectorList[p_RandNum] = p_VectorList[i];
-            p_VectorList[i] = vectorTemp;
-        }
+            randNum = UnityEngine.Random.Range(0, i+1);             // Fisher-Yatesシャッフルアルゴリズム
+            prefabTemp = _prefabList[i];                            // _prefabList配列内順序シャッフル
+            _prefabList[i] = _prefabList[randNum];
+            _prefabList[randNum] = prefabTemp;
 
-        p_RandNum = UnityEngine.Random.Range(0, p_PrefabList.Length); // シャッフル後にPrefab生成
+            vectorTemp = _vectorList[randNum];                      // _vectorList配列内順序シャッフル
+            _vectorList[randNum] = _vectorList[i];
+            _vectorList[i] = vectorTemp;
+        }
+        randNum = UnityEngine.Random.Range(0, _prefabList.Length);  // シャッフル後にPrefab生成
         var parentTransform = this.transform;
-        for (int i = 0; i < p_PrefabList.Length; i++) Instantiate(p_PrefabList[i], p_VectorList[i], Quaternion.identity, parentTransform);
+        for (int i = 0; i < _prefabList.Length; i++) Instantiate(_prefabList[i], _vectorList[i], Quaternion.identity, parentTransform);
     }
 }
